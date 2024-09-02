@@ -1,0 +1,9 @@
+{
+  "login": "Login",
+  "firstName": "Ivan",
+  "secondName": "Ivanov",
+  "birthdate": "1999-09-02",
+  "biography": "something",
+  "city": "Saint-Petersburg",
+  "password": "password"
+}

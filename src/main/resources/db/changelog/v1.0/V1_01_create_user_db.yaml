@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 30.08.2024
+      author: Alexander_Makarov
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: varchar
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: login
+                  type: varchar
+              - column:
+                  name: first_name
+                  type: varchar
+              - column:
+                  name: second_name
+                  type: varchar
+              - column:
+                  name: birthdate
+                  type: varchar
+              - column:
+                  name: biography
+                  type: varchar
+              - column:
+                  name: city
+                  type: varchar
+              - column:
+                  name: password
+                  type: varchar
+
+
+
