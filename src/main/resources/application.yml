@@ -1,9 +1,10 @@
+
 spring:
   application:
     name: socialnetwork
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/postgres
+    url: jdbc:postgresql://localhost:5431/socialnetwork?currentSchema=socialnetwork
     username: postgres
     password: postgres
 

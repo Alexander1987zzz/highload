@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
@@ -50,6 +51,18 @@ public class UserApi {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/users/search")
+    public ResponseEntity<List<User>> getUsers(@RequestParam String firstName, @RequestParam String secondName) {
+        var query = "select * from users where second_name like :secondName || '%' and first_name like :firstName || '%' order by birthdate";
+
+        var namedParameters = new MapSqlParameterSource()
+                .addValue("firstName", firstName)
+                .addValue("secondName", secondName);
+        List<User> users = jdbcTemplate.query(query, namedParameters, new UserRowMapper());
+        return ResponseEntity.ok(users);
+
     }
 
     @PostMapping("/users/register")
