@@ -32,6 +32,25 @@ databaseChangeLog:
               - column:
                   name: password
                   type: varchar
+  - changeSet:
+      id: 06.10.2024
+      author: Alexander_Makarov
+      changes:
+        - createTable:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: text
+                  type: varchar
+              - column:
+                  name: author_user_id
+                  type: varchar
+
 
 
 
