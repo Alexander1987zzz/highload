@@ -1,0 +1,85 @@
+services:
+  pgmaster:
+    image: 'postgres:16.4'
+    container_name: pgmaster
+    hostname: pgmaster
+    environment:
+      - POSTGRES_DB=socialnetwork
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    command: [
+      "postgres",
+      "-c",
+      "config_file=/etc/postgresql/postgresql.conf",
+      "-c",
+      "hba_file=/etc/postgresql/pg_hba.conf"
+    ]
+    volumes:
+      - ./master_postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./master_pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./postgres_data_master:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '5431:5432'
+    networks:
+      postgres:
+        ipv4_address: 172.21.0.2
+  pgslave:
+    image: 'postgres:16.4'
+    container_name: pgslave
+    hostname: pgslave
+    environment:
+      - POSTGRES_DB=socialnetwork
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    command: [
+      "postgres",
+      "-c",
+      "config_file=/etc/postgresql/postgresql.conf",
+      "-c",
+      "hba_file=/etc/postgresql/pg_hba.conf"
+    ]
+    volumes:
+      - ./slave_postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./slave_pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./postgres_data_slave:/var/lib/postgresql/data
+      - ./postgres_backup:/backup
+    ports:
+      - '5433:5432'
+    networks:
+      postgres:
+        ipv4_address: 172.21.0.3
+
+  pgslave2:
+    image: 'postgres:16.4'
+    container_name: pgslave2
+    hostname: pgslave2
+    environment:
+      - POSTGRES_DB=socialnetwork
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    command: [
+      "postgres",
+      "-c",
+      "config_file=/etc/postgresql/postgresql.conf",
+      "-c",
+      "hba_file=/etc/postgresql/pg_hba.conf"
+    ]
+    volumes:
+      - ./slave2_postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./slave2_pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./postgres_data_slave2:/var/lib/postgresql/data
+      - ./postgres_backup:/backup
+    ports:
+      - '5434:5432'
+    networks:
+      postgres:
+        ipv4_address: 172.21.0.4
+
+networks:
+  postgres:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1

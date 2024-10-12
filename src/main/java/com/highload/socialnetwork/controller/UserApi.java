@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,7 @@ public class UserApi {
     }
 
     @GetMapping("/users/search")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<User>> getUsers(@RequestParam String firstName, @RequestParam String secondName) {
         var query = "select * from users where second_name like :secondName || '%' and first_name like :firstName || '%' order by birthdate";
 
@@ -66,6 +68,7 @@ public class UserApi {
     }
 
     @PostMapping("/users/register")
+    @Transactional
     public ResponseEntity<RegisterResponse> register(@RequestBody User user) {
         var passwordEncoder = new BCryptPasswordEncoder();
         var originalPassword = user.getPassword();
