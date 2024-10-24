@@ -76,6 +76,23 @@ services:
       postgres:
         ipv4_address: 172.21.0.4
 
+  redis:
+    image: redis:6.0
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_USER=user
+      - REDIS_PASSWORD=password
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"   # RabbitMQ
+      - "15672:15672" # RabbitMQ Management Console
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
 networks:
   postgres:
     driver: bridge

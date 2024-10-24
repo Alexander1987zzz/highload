@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,8 +24,8 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class PostApi {
-
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Cacheable(value = "postCache")
     @GetMapping("/feed")
@@ -47,13 +48,14 @@ public class PostApi {
     public ResponseEntity<UserPost> createPost(@RequestParam String text, @RequestParam String authorUserId) {
         var query = "INSERT INTO posts (id, text, author_user_id) VALUES (nextval('post_id_seq'), :text, :authorUserId)";
         Map<String, Object> params = new HashMap<>();
-
         params.put("text", text);
         params.put("authorUserId", authorUserId);
         jdbcTemplate.update(query, params);
         UserPost userPost = new UserPost();
         userPost.setText(text);
         userPost.setAuthorUserId(authorUserId);
+        messagingTemplate.convertAndSend("topic", text);
+
         return ResponseEntity.ok(userPost);
     }
 
