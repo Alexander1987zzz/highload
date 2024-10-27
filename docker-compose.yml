@@ -88,7 +88,8 @@ services:
     image: rabbitmq:management
     ports:
       - "5672:5672"   # RabbitMQ
-      - "15672:15672" # RabbitMQ Management Console
+      - "15672:15672"
+      - "61613:61613"# RabbitMQ Management Console
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
