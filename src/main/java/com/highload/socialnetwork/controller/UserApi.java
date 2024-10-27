@@ -9,6 +9,7 @@ import com.highload.socialnetwork.model.RegisterResponse;
 import com.highload.socialnetwork.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -54,16 +55,17 @@ public class UserApi {
         }
     }
 
+    @Cacheable(value = "usersCache")
     @GetMapping("/users/search")
     @Transactional(readOnly = true)
-    public ResponseEntity<List<User>> getUsers(@RequestParam String firstName, @RequestParam String secondName) {
+    public List<User> getUsers(@RequestParam String firstName, @RequestParam String secondName) {
         var query = "select * from users where second_name like :secondName || '%' and first_name like :firstName || '%' order by birthdate";
 
         var namedParameters = new MapSqlParameterSource()
                 .addValue("firstName", firstName)
                 .addValue("secondName", secondName);
         List<User> users = jdbcTemplate.query(query, namedParameters, new UserRowMapper());
-        return ResponseEntity.ok(users);
+        return users;
 
     }
 
