@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple WebSocket Client</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Client</h1>
+<input type="text" id="message" placeholder="Enter your message" required>
+<input type="text" id="authorUserId" placeholder="Enter your author user ID" required>
+<button onclick="sendPost()">Send</button>
+<div id="messages"></div>
+
+<script>
+    var stompClient = null;
+
+    // Функция для подключения к WebSocket
+    function connect() {
+        var socket = new SockJS('/ws'); // Убедитесь, что путь совпадает с вашим сервером
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/messages', function (message) {
+                showMessage(JSON.parse(message.body));
+            });
+        }, function (error) {
+            console.error('STOMP error: ' + error);
+        });
+    }
+
+
+    function sendPost() {
+        var messageContent = document.getElementById("message").value;
+        var authorUserId = document.getElementById("authorUserId").value;
+
+        fetch('http://localhost:8080/post/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'text': messageContent,
+                'authorUserId': authorUserId
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                document.getElementById("message").value = '';
+                document.getElementById("authorUserId").value = '';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+
+    function showMessage(message) {
+        var messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML += "<div>" + message.content + " - " + message.authorUserId + "</div>";
+    }
+
+    // Подключение при загрузке страницы
+    window.onload = function() {
+        connect();
+    };
+</script>
+</body>
+</html>

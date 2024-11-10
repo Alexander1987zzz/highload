@@ -2,15 +2,11 @@ package com.highload.socialnetwork.controller;
 
 import com.highload.socialnetwork.model.UserPost;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,21 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("/app/post")
+@RequestMapping("/post")
 @RestController
 @RequiredArgsConstructor
 public class PostApi {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpMessagingTemplate messagingTemplate;
-    private final RabbitTemplate rabbitTemplate;
 
-    @MessageMapping("/app/post/create")
-    @SendTo("/topic")
     @PostMapping("/create")
     public ResponseEntity<UserPost> createPost(@RequestParam String text, @RequestParam String authorUserId) {
         var query = "INSERT INTO posts (id, text, author_user_id) VALUES (nextval('post_id_seq'), :text, :authorUserId)";
@@ -45,6 +37,7 @@ public class PostApi {
         UserPost userPost = new UserPost();
         userPost.setText(text);
         userPost.setAuthorUserId(authorUserId);
+        messagingTemplate.convertAndSend("/topic/messages", userPost);
         return ResponseEntity.ok(userPost);
     }
 

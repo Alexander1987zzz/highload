@@ -55,7 +55,7 @@ public class UserApi {
         }
     }
 
-    @Cacheable(value = "usersCache")
+    @Cacheable(value = "usersCache", key = "#secondName + ':' + #firstName")
     @GetMapping("/users/search")
     @Transactional(readOnly = true)
     public List<User> getUsers(@RequestParam String firstName, @RequestParam String secondName) {
