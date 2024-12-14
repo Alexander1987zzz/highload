@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * <code>@Primary</code> and <code>@DependsOn</code> are the key requirements for Spring Boot.
  */
-@Configuration
+//@Configuration
 public class ReplicationDataSourceConfig {
     /**
      * Main DataSource

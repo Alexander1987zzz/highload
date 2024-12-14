@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("dialog")
+@RequestMapping("v1/dialog")
 @RestController
 @RequiredArgsConstructor
 public class DialogApi {
