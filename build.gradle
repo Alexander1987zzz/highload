@@ -44,6 +44,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-reactor-netty:3.3.3")
     implementation("org.springframework:spring-messaging:6.1.13")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
+    // https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus
+    implementation("io.micrometer:micrometer-registry-prometheus:1.14.3")
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.4.1")
+
+
 }
 
 sourceSets {

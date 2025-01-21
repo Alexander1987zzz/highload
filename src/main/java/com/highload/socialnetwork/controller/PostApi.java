@@ -1,7 +1,8 @@
 package com.highload.socialnetwork.controller;
 
 import com.highload.socialnetwork.model.UserPost;
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -22,10 +23,19 @@ import java.util.Map;
 
 @RequestMapping("/post")
 @RestController
-@RequiredArgsConstructor
 public class PostApi {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpMessagingTemplate messagingTemplate;
+    private final Counter counter;
+
+    public PostApi(NamedParameterJdbcTemplate jdbcTemplate, SimpMessagingTemplate messagingTemplate, MeterRegistry registry) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.messagingTemplate = messagingTemplate;
+        this.counter = Counter.builder("post_counter").
+                tag("version", "v1").
+                description("post_counter").
+                register(registry);
+    }
 
     @PostMapping("/create")
     public ResponseEntity<UserPost> createPost(@RequestParam String text, @RequestParam String authorUserId) {
@@ -38,6 +48,7 @@ public class PostApi {
         userPost.setText(text);
         userPost.setAuthorUserId(authorUserId);
         messagingTemplate.convertAndSend("/topic/messages", userPost);
+        counter.increment();
         return ResponseEntity.ok(userPost);
     }
 

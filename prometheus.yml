@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  # Сбор метрик приложения
+  - job_name: "dynamic_targets"
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/targets.yaml
+        refresh_interval: 10s
+
+  # Сбор метрик самого Prometheus
+  - job_name: "prometheus"
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ["host.docker.internal:8081"]
+
+  # Сбор метрик Alertmanager
+  - job_name: "alertmanager"
+    static_configs:
+      - targets: ["alertmanager:9093"]
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+rule_files:
+  - "/etc/prometheus/alert_rules.yml"
